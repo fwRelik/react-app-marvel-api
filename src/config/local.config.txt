@@ -1,0 +1,7 @@
+const config = {
+    _apiBase: '...'
+    _apiKey: '...'
+    _baseOffset: '...'
+};
+
+export { config };

@@ -1,0 +1,53 @@
+@keyframes rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.spinner {
+    // position: absolute;
+    // top: 0;
+    // left: 0;
+    // bottom: 0;
+    // right: 0;
+    // background-color: #000000bb;
+
+    margin: 0 auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    z-index: 20;
+    
+    img {
+        display: block;
+        animation-name: rotate;
+        animation-duration: 1s;
+        animation-iteration-count: infinite;
+        animation-timing-function: linear;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+// style="margin: auto; background: none; display: block; shape-rendering: auto;" width="200px" height="200px" 
+
+
+
+
+
+
+
