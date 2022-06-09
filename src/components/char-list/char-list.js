@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 
 import MarvelService from '../../services/marvel-services';
@@ -9,28 +9,26 @@ import Spinner from '../sipnner';
 
 import './char-list.scss';
 
-class CharList extends Component {
-    state = {
-        items: [],
-        loading: true,
-        error: false,
-        newItemsLoading: false,
-        offset: 219,
-        charEnded: false
-    }
+const CharList = ({ onCharSelected }) => {
+    const [items, setItems] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
+    const [newItemsLoading, setNewItemsLoading] = useState(false);
+    const [offset, setOffset] = useState(210);
+    const [charEnded, setCharEnded] = useState(false);
 
-    marvelService = new MarvelService();
+    const marvelService = new MarvelService();
 
-    componentDidMount() {
-        this.onRequest();
-        // this._scrollEvent = this.onScrollLoad();
-    }
+    useEffect(() => {
+        onRequest();
 
-    // componentWillUnmount() {
-    //     window.removeEventListener('scroll', this._scrollEvent);
-    // }
+        // const _scrollEvent = onScrollLoad();
 
-    // onScrollLoad = () => {
+        // return window.removeEventListener('scroll', _scrollEvent);
+
+    }, []);
+
+    // const onScrollLoad = () => {
     //     return window.addEventListener('scroll', () => {
     //         const scrollHeight = Math.max(
     //             document.body.scrollHeight, document.documentElement.scrollHeight,
@@ -38,54 +36,59 @@ class CharList extends Component {
 
     //         const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
-    //         if (Math.floor(scrollHeight) <= Math.floor(scrollTop) + 2 && !this.state.newItemsLoading) {
-    //             this.onRequest(this.state.offset, () => {
-    //                 document.documentElement.scrollTop = scrollHeight - 100;
-    //             });
-    //             document.body.style.height = `${scrollHeight}px`;
+    //         if (Math.floor(scrollHeight) <= Math.floor(scrollTop) + 2 && !newItemsLoading) {
+    //             onRequest(offset)
+    //             // , () => {
+    //             //     document.documentElement.scrollTop = scrollHeight - 100;
+    //             // });
+    //             // document.body.style.height = `${scrollHeight}px`;
     //         }
     //     })
     // }
 
-    onRequest = (offset, cb = null) => {
-        this.onLoading();
-        this.marvelService
+    const onRequest = (offset) => {
+        onLoading();
+        marvelService
             .getAllCharacters(offset)
-            .then(res => this.onItemsLoaded(res, cb))
-            .catch(this.onError);
+            .then(res => onItemsLoaded(res))
+            .catch(onError);
     }
 
-    onLoading = () => {
-        this.setState({ loading: true, newItemsLoading: true });
+    const onLoading = () => {
+        setLoading(true);
+        setNewItemsLoading(true);
     }
 
-    onError = () => {
-        this.setState({
-            loading: false,
-            error: true
-        });
+    const onError = () => {
+        setLoading(false);
+        setError(true);
     }
 
-    onItemsLoaded = (newItems, cb) => {
+    const onItemsLoaded = (newItems) => {
         let ended = false;
         if (newItems.length < 9) {
             ended = true;
         }
 
-        this.setState(({ offset, items }) => ({
-            items: [...items, ...newItems],
-            loading: false,
-            newItemsLoading: false,
-            offset: offset + 9,
-            charEnded: ended
-        }), cb);
+        setItems(items => [...items, ...newItems]);
+        setLoading(false);
+        setNewItemsLoading(false);
+        setOffset(offset => offset + 9);
+        setCharEnded(ended);
     }
 
-    renderItems(arr) {
+    let itemRefs = useRef([]);
+    const focusOnItem = (id) => {
+        itemRefs.current.forEach(item => item.classList.remove('char__item_selected'));
+        itemRefs.current[id].classList.add('char__item_selected');
+        itemRefs.current[id].focus();
+    }
+
+    const renderItems = (arr) => {
         if (Object.keys(arr).length === 0) return;
 
-        const items = arr.map((val, i) => {
-            const { thumbnail, name } = val;
+        const listItem = arr.map((val, i) => {
+            const { id, thumbnail, name } = val;
             let imgNotAvaStyle = {},
                 letters = {}
 
@@ -93,46 +96,61 @@ class CharList extends Component {
             if (name.length > 20) letters.fontSize = '16px';
 
             return (
-                <CharListItem
+                <li
                     key={i}
-                    methods={[this.props.onCharSelected]}
-                    styles={[letters, imgNotAvaStyle]}
-                    {...val}
-                />
+                    ref={el => itemRefs.current[i] = el}
+                    tabIndex={0}
+                    className="char__item"
+                    onClick={() => {
+                        focusOnItem(i);
+                        onCharSelected(id);
+                    }}
+                    onKeyPress={e => {
+                        if (e.key === " " || e.key === "Enter") {
+                            focusOnItem(i);
+                            onCharSelected(id);
+                        }
+                    }}>
+                    <img
+                        src={thumbnail}
+                        alt={name}
+                        style={imgNotAvaStyle} />
+                    <div
+                        className="char__name"
+                        style={letters}>
+                        {name}
+                    </div>
+                </li>
             )
         });
 
         return (
             <ul className="char__grid">
-                {items}
+                {listItem}
             </ul>
         )
     }
 
-    render() {
-        const { items, loading, error, newItemsLoading, offset, charEnded } = this.state;
+    const chars = renderItems(items);
 
-        const chars = this.renderItems(items);
+    const errorMessage = error ? <ErrorMessage /> : null;
+    const spinner = loading ? <Spinner /> : null;
+    const content = !(loading || error) ? chars : null;
 
-        const errorMessage = error ? <ErrorMessage /> : null;
-        const spinner = loading ? <Spinner /> : null;
-        const content = !(loading || error) ? chars : null;
-
-        return (
-            <div className="char__list">
-                {errorMessage}
-                {spinner}
-                {content}
-                <button
-                    className="button button__main button__long"
-                    disabled={newItemsLoading}
-                    style={{ 'display': charEnded ? 'none' : 'block' }}
-                    onClick={() => this.onRequest(offset)}>
-                    <div className="inner">load more</div>
-                </button>
-            </div>
-        )
-    }
+    return (
+        <div className="char__list">
+            {errorMessage}
+            {spinner}
+            {content}
+            <button
+                className="button button__main button__long"
+                disabled={newItemsLoading}
+                style={{ 'display': charEnded ? 'none' : 'block' }}
+                onClick={() => onRequest(offset)}>
+                <div className="inner">load more</div>
+            </button>
+        </div>
+    )
 }
 
 CharList.propTypes = {

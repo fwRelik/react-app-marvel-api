@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import MarvelService from '../../services/marvel-services';
 
@@ -8,90 +8,81 @@ import ErrorMessage from '../error-message';
 import './random-char.scss';
 import mjolnir from '../../assets/img/mjolnir.png';
 
-class RandomChar extends Component {
+const RandomChar = () => {
 
-    state = {
-        char: {},
-        loading: true,
-        error: false
+    const [char, setChar] = useState({});
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
+
+    const marvelService = new MarvelService();
+
+    useEffect(() => {
+        updateChar();
+        const timerId = setInterval(() => updateChar(true), 5000);
+
+        return () => {
+            clearInterval(timerId);
+        }
+    }, []);
+
+    const onLoading = () => {
+        setLoading(true)
     }
 
-    marvelService = new MarvelService();
-
-    componentDidMount() {
-        this.updateChar();
-        // this.timerId = setInterval(this.updateChar, 15000);
+    const onCharLoaded = (char) => {
+        setChar(char);
+        setLoading(false);
+        setError(false);
     }
 
-    componentWillUnmount() {
-        // clearInterval(this.timerId);
+    const onError = () => {
+        setLoading(false);
+        setError(true);
     }
 
-    onLoading = () => {
-        this.setState({ loading: true });
-    }
+    const updateChar = (interval = false) => {
+        if (!interval) onLoading();
 
-    onCharLoaded = (char) => {
-        this.setState({
-            char,
-            loading: false,
-            error: false
-        });
-    }
-
-    onError = () => {
-        this.setState({
-            loading: false,
-            error: true
-        });
-    }
-
-    updateChar = () => {
-        this.onLoading();
         const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000);
-        this.marvelService
+        marvelService
             .getCharacter(id)
-            .then(this.onCharLoaded)
-            .catch(this.onError)
+            .then(onCharLoaded)
+            .catch(onError)
     }
 
-    onTryClick = (e) => {
+    const onTryClick = (e) => {
         e.preventDefault();
-        this.updateChar();
+        updateChar();
     }
 
-    render() {
-        const { char, loading, error } = this.state;
+    const errorMessage = error ? <ErrorMessage /> : null;
+    const spinner = loading ? <Spinner /> : null;
+    const content = !(loading || error) ? <View char={char} /> : null;
 
-        const errorMessage = error ? <ErrorMessage /> : null;
-        const spinner = loading ? <Spinner /> : null;
-        const content = !(loading || error) ? <View char={char} /> : null;
+    return (
+        <div className="randomchar">
 
-        return (
-            <div className="randomchar">
+            {errorMessage}
+            {spinner}
+            {content}
 
-                {errorMessage}
-                {spinner}
-                {content}
-
-                <div className="randomchar__static">
-                    <p className="randomchar__title">
-                        Random character for today!<br />
-                        Do you want to get to know him better?
-                    </p>
-                    <p className="randomchar__title">
-                        Or choose another one
-                    </p>
-                    <button
-                        className="button button__main"
-                        onClick={this.onTryClick}>
-                        <div className="inner">try it</div>
-                    </button>
-                    <img src={mjolnir} alt="mjolnir" className="randomchar__decoration" />
-                </div>
-            </div >
-        )
-    }
+            <div className="randomchar__static">
+                <p className="randomchar__title">
+                    Random character for today!<br />
+                    Do you want to get to know him better?
+                </p>
+                <p className="randomchar__title">
+                    Or choose another one
+                </p>
+                <button
+                    className="button button__main"
+                    onClick={onTryClick}>
+                    <div className="inner">try it</div>
+                </button>
+                <img src={mjolnir} alt="mjolnir" className="randomchar__decoration" />
+            </div>
+        </div >
+    )
 }
 
 const View = ({ char }) => {

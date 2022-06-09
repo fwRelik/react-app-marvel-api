@@ -1,26 +1,19 @@
-const CharListItem = ({ methods, styles, id, name, thumbnail }) => {
-    const [onCharSelected] = methods;
+const CharListItem = ({ methods, styles, iterId, id, name, thumbnail }) => {
+    const [onCharSelected, getRefs, focusOnItem] = methods;
     const [letters, imgNotAvaStyle] = styles;
-
-    const onActiveSelect = e => {
-        let trigger = e.target.closest('.char__item');
-        trigger.parentNode.childNodes.forEach(item => {
-            item.classList.remove('char__item_selected');
-        });
-        trigger.classList.add('char__item_selected');
-    }
 
     return (
         <li
+            ref={getRefs}
             tabIndex={0}
             className="char__item"
-            onClick={(e) => {
-                onActiveSelect(e);
+            onClick={() => {
+                focusOnItem(iterId);
                 onCharSelected(id);
             }}
             onKeyPress={e => {
-                if (e.key === ' ' || e.key === "Enter") {
-                    onActiveSelect(e);
+                if (e.key === " " || e.key === "Enter") {
+                    focusOnItem(iterId);
                     onCharSelected(id);
                 }
             }}>
