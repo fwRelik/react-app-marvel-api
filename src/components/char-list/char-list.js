@@ -51,8 +51,7 @@ const CharList = ({ onCharSelected }) => {
     }
 
     const onItemsLoaded = (newItems) => {
-        let ended = false;
-        if (newItems.length < 9) ended = true;
+        let ended = newItems.length < 9 ? true : false;
 
         setItems(items => [...items, ...newItems]);
         setNewItemsLoading(false);
