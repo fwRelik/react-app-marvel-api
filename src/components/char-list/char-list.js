@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 
-import MarvelService from '../../services/marvel-services';
+import useMarvelService from '../../services/marvel-services';
 
-import CharListItem from '../char-list-item';
 import ErrorMessage from '../error-message';
 import Spinner from '../sipnner';
 
@@ -11,20 +10,18 @@ import './char-list.scss';
 
 const CharList = ({ onCharSelected }) => {
     const [items, setItems] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
     const [newItemsLoading, setNewItemsLoading] = useState(false);
     const [offset, setOffset] = useState(210);
     const [charEnded, setCharEnded] = useState(false);
 
-    const marvelService = new MarvelService();
+    const { loading, error, getAllCharacters } = useMarvelService();
 
     useEffect(() => {
-        onRequest();
+        onRequest(offset, true);
 
         // const _scrollEvent = onScrollLoad();
 
-        // return window.removeEventListener('scroll', _scrollEvent);
+        // return () => window.removeEventListener('scroll', _scrollEvent);
 
     }, []);
 
@@ -36,7 +33,7 @@ const CharList = ({ onCharSelected }) => {
 
     //         const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
-    //         if (Math.floor(scrollHeight) <= Math.floor(scrollTop) + 2 && !newItemsLoading) {
+    //         if (Math.floor(scrollHeight) <= Math.floor(scrollTop) && !newItemsLoading) {
     //             onRequest(offset)
     //             // , () => {
     //             //     document.documentElement.scrollTop = scrollHeight - 100;
@@ -46,32 +43,18 @@ const CharList = ({ onCharSelected }) => {
     //     })
     // }
 
-    const onRequest = (offset) => {
-        onLoading();
-        marvelService
-            .getAllCharacters(offset)
-            .then(res => onItemsLoaded(res))
-            .catch(onError);
-    }
+    const onRequest = (offset, initial) => {
+        initial ? setNewItemsLoading(false) : setNewItemsLoading(true);
 
-    const onLoading = () => {
-        setLoading(true);
-        setNewItemsLoading(true);
-    }
-
-    const onError = () => {
-        setLoading(false);
-        setError(true);
+        getAllCharacters(offset)
+            .then(onItemsLoaded)
     }
 
     const onItemsLoaded = (newItems) => {
         let ended = false;
-        if (newItems.length < 9) {
-            ended = true;
-        }
+        if (newItems.length < 9) ended = true;
 
         setItems(items => [...items, ...newItems]);
-        setLoading(false);
         setNewItemsLoading(false);
         setOffset(offset => offset + 9);
         setCharEnded(ended);
@@ -92,7 +75,7 @@ const CharList = ({ onCharSelected }) => {
             let imgNotAvaStyle = {},
                 letters = {}
 
-            if (thumbnail.indexOf('/image_not_available.') !== -1) imgNotAvaStyle.objectFit = 'unset';
+            if (thumbnail === `http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg`) imgNotAvaStyle.objectFit = 'unset';
             if (name.length > 20) letters.fontSize = '16px';
 
             return (
@@ -134,14 +117,15 @@ const CharList = ({ onCharSelected }) => {
     const chars = renderItems(items);
 
     const errorMessage = error ? <ErrorMessage /> : null;
-    const spinner = loading ? <Spinner /> : null;
-    const content = !(loading || error) ? chars : null;
+    const spinner = loading && !newItemsLoading ? <Spinner /> : null;
 
     return (
         <div className="char__list">
+
             {errorMessage}
             {spinner}
-            {content}
+            {chars}
+
             <button
                 className="button button__main button__long"
                 disabled={newItemsLoading}

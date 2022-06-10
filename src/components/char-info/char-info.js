@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
-import MarvelService from '../../services/marvel-services';
-
+import useMarvelService from '../../services/marvel-services';
 
 import ErrorMessage from '../error-message';
 import Spinner from '../sipnner';
@@ -12,10 +11,8 @@ import './char-info.scss';
 
 const CharInfo = ({ charId }) => {
     const [char, setChar] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(false);
 
-    const marvelService = new MarvelService();
+    const {loading, error, getCharacter, clearError} = useMarvelService();
 
     useEffect(() => {
         updateChar();
@@ -24,18 +21,13 @@ const CharInfo = ({ charId }) => {
     const updateChar = () => {
         if (!charId) return;
 
-        setLoading(true);
-
-        marvelService
-            .getCharacter(charId)
+        clearError();
+        getCharacter(charId)
             .then(onCharLoaded)
-            .catch(() => setError(true));
     }
 
     const onCharLoaded = (char) => {
         setChar(char);
-        setLoading(false);
-        setError(false);
     }
 
     const skeleton = char || loading || error ? null : <Skeleton />
@@ -45,10 +37,12 @@ const CharInfo = ({ charId }) => {
 
     return (
         <div className="char__info">
+
             {skeleton}
             {errorMessage}
             {spinner}
             {content}
+
         </div>
     )
 }
@@ -65,7 +59,7 @@ const View = ({ char: { name, description, thumbnail, homepage, wiki, comics } }
 
     let imgNotAvaStyle,
         title = 'Comics:';
-    if (thumbnail.indexOf('/image_not_available.') !== -1) imgNotAvaStyle = { objectFit: 'unset' };
+    if (thumbnail === `http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg`) imgNotAvaStyle = { objectFit: 'unset' };
     if (!items.length) title = 'There is no comics with this character.';
 
     return (
