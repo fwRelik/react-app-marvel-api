@@ -1,11 +1,8 @@
 .errors {
     margin: 0 auto;
-
-    .error-img {
-        // width: 300px;
-        width: 100%;
-        // height: 100%;
-    }
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
     .error-msg {
         font-size: 24px;

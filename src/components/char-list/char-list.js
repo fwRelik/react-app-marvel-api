@@ -14,7 +14,7 @@ const CharList = ({ onCharSelected }) => {
     const [offset, setOffset] = useState(210);
     const [charEnded, setCharEnded] = useState(false);
 
-    const { loading, error, getAllCharacters } = useMarvelService();
+    const { loading, error, clearError, getAllCharacters } = useMarvelService();
 
     useEffect(() => {
         onRequest(offset, true);
@@ -53,6 +53,7 @@ const CharList = ({ onCharSelected }) => {
     const onItemsLoaded = (newItems) => {
         let ended = newItems.length < 9 ? true : false;
 
+        clearError();
         setItems(items => [...items, ...newItems]);
         setNewItemsLoading(false);
         setOffset(offset => offset + 9);
