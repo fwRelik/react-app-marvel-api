@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
+import { useScroll } from '../../hooks/scroll.hook';
+
 import useMarvelService from '../../services/marvel-services';
 
 import ErrorMessage from '../error-message';
@@ -15,10 +17,15 @@ const ComicsList = () => {
     const [comicsEnded, setComicsEnded] = useState(false);
 
     const { loading, error, getAllComics } = useMarvelService();
+    const { scrollEnd, setScrollEnd } = useScroll();
 
     useEffect(() => {
         onRequest(offset, true);
     }, [])
+
+    useEffect(() => {
+        if (scrollEnd) onRequest(offset);
+    }, [scrollEnd])
 
     const onRequest = (offset, initial) => {
         initial ? setNewItemsLoading(false) : setNewItemsLoading(true);
@@ -33,6 +40,7 @@ const ComicsList = () => {
         setComicsList(comicsList => [...comicsList, ...newItems]);
         setNewItemsLoading(false);
         setOffset(offset => offset + 9);
+        setScrollEnd(false)
         setComicsEnded(ended);
     }
 
@@ -83,7 +91,7 @@ const ComicsList = () => {
                 disabled={newItemsLoading}
                 style={{ 'display': comicsEnded ? 'none' : 'block' }}
                 onClick={() => onRequest(offset)}>
-                <div className="inner">load more</div>
+                <div className="inner">{newItemsLoading ? 'loading...' : 'load more'}</div>
             </button>
         </div>
     )

@@ -38,7 +38,7 @@ const useMarvelService = () => {
             thumbnail: item.thumbnail.path + '.' + item.thumbnail.extension,
             homepage: item.urls[0].url,
             wiki: item.urls[1].url,
-            comics: item.comics.items
+            comics: item.comics.items,
         }
     }
 

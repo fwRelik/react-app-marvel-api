@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 
+import { useScroll } from '../../hooks/scroll.hook';
+
 import useMarvelService from '../../services/marvel-services';
 
 import ErrorMessage from '../error-message';
@@ -15,33 +17,15 @@ const CharList = ({ onCharSelected }) => {
     const [charEnded, setCharEnded] = useState(false);
 
     const { loading, error, clearError, getAllCharacters } = useMarvelService();
+    const { scrollEnd, setScrollEnd } = useScroll();
 
     useEffect(() => {
         onRequest(offset, true);
-
-        // const _scrollEvent = onScrollLoad();
-
-        // return () => window.removeEventListener('scroll', _scrollEvent);
-
     }, []);
 
-    // const onScrollLoad = () => {
-    //     return window.addEventListener('scroll', () => {
-    //         const scrollHeight = Math.max(
-    //             document.body.scrollHeight, document.documentElement.scrollHeight,
-    //         ) - document.documentElement.clientHeight;
-
-    //         const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-
-    //         if (Math.floor(scrollHeight) <= Math.floor(scrollTop) && !newItemsLoading) {
-    //             onRequest(offset)
-    //             // , () => {
-    //             //     document.documentElement.scrollTop = scrollHeight - 100;
-    //             // });
-    //             // document.body.style.height = `${scrollHeight}px`;
-    //         }
-    //     })
-    // }
+    useEffect(() => {
+        if (scrollEnd) onRequest(offset);
+    }, [scrollEnd]);
 
     const onRequest = (offset, initial) => {
         initial ? setNewItemsLoading(false) : setNewItemsLoading(true);
@@ -54,9 +38,10 @@ const CharList = ({ onCharSelected }) => {
         let ended = newItems.length < 9 ? true : false;
 
         clearError();
+        setOffset(offset => offset + 9);
         setItems(items => [...items, ...newItems]);
         setNewItemsLoading(false);
-        setOffset(offset => offset + 9);
+        setScrollEnd(false)
         setCharEnded(ended);
     }
 
@@ -131,7 +116,7 @@ const CharList = ({ onCharSelected }) => {
                 disabled={newItemsLoading}
                 style={{ 'display': charEnded ? 'none' : 'block' }}
                 onClick={() => onRequest(offset)}>
-                <div className="inner">load more</div>
+                <div className="inner">{newItemsLoading ? 'loading...' : 'load more'}</div>
             </button>
         </div>
     )

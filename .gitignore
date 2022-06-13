@@ -6,6 +6,9 @@
 # testing
 /coverage
 
+# build
+/build
+
 # configs
 /src/config/*.config.[jt]s*
 
