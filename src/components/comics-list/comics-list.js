@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
 import useMarvelService from '../../services/marvel-services';
 
@@ -10,7 +11,7 @@ import './comics-list.scss';
 const ComicsList = () => {
     const [comicsList, setComicsList] = useState([]);
     const [newItemsLoading, setNewItemsLoading] = useState(false);
-    const [offset, setOffset] = useState(210);
+    const [offset, setOffset] = useState(0);
     const [comicsEnded, setComicsEnded] = useState(false);
 
     const { loading, error, getAllComics } = useMarvelService();
@@ -36,7 +37,7 @@ const ComicsList = () => {
     }
 
     const renderItems = () => {
-        const items = comicsList.map(({ title, prices, thumbnail }, i) => {
+        const items = comicsList.map(({ id, title, prices, thumbnail }, i) => {
             let imgNotAvaStyle = {};
 
             if (thumbnail === `http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg`) imgNotAvaStyle.objectFit = 'fill';
@@ -45,7 +46,7 @@ const ComicsList = () => {
                 <li
                     key={i}
                     className="comics__item">
-                    <a href="#">
+                    <Link to={`${id}`}>
                         <img
                             src={thumbnail}
                             alt={title}
@@ -53,7 +54,7 @@ const ComicsList = () => {
                             style={imgNotAvaStyle} />
                         <div className="comics__item-name">{title}</div>
                         <div className="comics__item-price">{prices}</div>
-                    </a>
+                    </Link>
                 </li>
             )
         })

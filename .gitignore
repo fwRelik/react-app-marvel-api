@@ -7,7 +7,7 @@
 /coverage
 
 # configs
-/src/config/*.config.js*
+/src/config/*.config.[jt]s*
 
 # misc
 .DS_Store
