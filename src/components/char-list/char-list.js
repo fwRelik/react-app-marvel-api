@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 import { useScroll } from '../../hooks/scroll.hook';
 import { useSessionStorage } from '../../hooks/sessionStorage.hook';
+import { useConfigSetter } from '../../hooks/configSetter.hook';
 import useMarvelService from '../../services/marvel-services';
 
 import ErrorMessage from '../error-message';
@@ -13,7 +14,7 @@ import './char-list.scss';
 const CharList = ({ onCharSelected }) => {
     const { loading, error, clearError, getAllCharacters } = useMarvelService();
     const { scrollEnd, setScrollEnd } = useScroll();
-    const { setStorage, getStorage } = useSessionStorage();
+    const { setConfigPage, getConfigPage } = useConfigSetter();
 
     const [items, setItems] = useState([]);
     const [newItemsLoading, setNewItemsLoading] = useState(false);
@@ -21,11 +22,13 @@ const CharList = ({ onCharSelected }) => {
     const [charEnded, setCharEnded] = useState(false);
 
     useEffect(() => {
-        if (!getStorage('charInfo').length) {
+        const { itemInfo = [], itemOffset } = getConfigPage();
+
+        if (!itemInfo.length) {
             onRequest(offset, true);
         } else {
-            setItems(getStorage('charInfo'));
-            setOffset(+getStorage('charOffset') + 9)
+            setItems(itemInfo);
+            setOffset(itemOffset + 9);
         }
     }, []);
 
@@ -44,17 +47,19 @@ const CharList = ({ onCharSelected }) => {
         let ended = newItems.length < 9 ? true : false;
 
         clearError();
-        setOffset(offset => offset + 9);
-        setStorage('charOffset', offset);
 
+        setOffset(offset => offset + 9);
+        setItems(items => [...items, ...newItems]);
         setNewItemsLoading(false);
         setCharEnded(ended);
 
-        setItems(items => [...items, ...newItems]);
 
-        setStorage('charInfo', [...items, ...newItems]);
-        setStorage('charOffset', offset);
-        setScrollEnd(false)
+        setConfigPage({
+            items: [...items, ...newItems],
+            offset
+        });
+
+        setScrollEnd(false);
     }
 
     let itemRefs = useRef([]);

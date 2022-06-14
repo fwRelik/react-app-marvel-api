@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 import { useScroll } from '../../hooks/scroll.hook';
+import { useSessionStorage } from '../../hooks/sessionStorage.hook';
+import { useConfigSetter } from '../../hooks/configSetter.hook';
 
 import useMarvelService from '../../services/marvel-services';
 
@@ -11,16 +13,24 @@ import Spinner from '../sipnner';
 import './comics-list.scss';
 
 const ComicsList = () => {
+    const { loading, error, getAllComics } = useMarvelService();
+    const { scrollEnd, setScrollEnd } = useScroll();
+    const { setConfigPage, getConfigPage } = useConfigSetter();
+
     const [comicsList, setComicsList] = useState([]);
     const [newItemsLoading, setNewItemsLoading] = useState(false);
     const [offset, setOffset] = useState(0);
     const [comicsEnded, setComicsEnded] = useState(false);
 
-    const { loading, error, getAllComics } = useMarvelService();
-    const { scrollEnd, setScrollEnd } = useScroll();
-
     useEffect(() => {
-        onRequest(offset, true);
+        const { itemInfo = [], itemOffset } = getConfigPage();
+
+        if (!itemInfo.length) {
+            onRequest(offset, true);
+        } else {
+            setComicsList(itemInfo);
+            setOffset(itemOffset + 8);
+        }
     }, [])
 
     useEffect(() => {
@@ -38,10 +48,16 @@ const ComicsList = () => {
         let ended = newItems.length < 8 ? true : false;
 
         setComicsList(comicsList => [...comicsList, ...newItems]);
+        setOffset(offset => offset + 8);
         setNewItemsLoading(false);
-        setOffset(offset => offset + 9);
-        setScrollEnd(false)
         setComicsEnded(ended);
+
+        setConfigPage({
+            items: [...comicsList, ...newItems],
+            offset
+        });
+
+        setScrollEnd(false)
     }
 
     const renderItems = () => {

@@ -1,13 +1,22 @@
 import { useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 
 export const useSessionStorage = () => {
+    let pathKey;
+    const { pathname } = useLocation();
+
+    if (pathname === '/') pathKey = 'mp';
+    else pathKey = pathname.replace('/', '');
+
     const getStorage = useCallback((key) => {
-        return JSON.parse(sessionStorage.getItem(key)) || [];
+        return JSON.parse(sessionStorage.getItem(`${pathKey}_${key}`)) || [];
     });
 
     const setStorage = useCallback((key, values) => {
-        sessionStorage.setItem(key, JSON.stringify(values));
+        sessionStorage.setItem(`${pathKey}_${key}`, JSON.stringify(values));
     });
 
-    return { setStorage, getStorage };
+    const _getPathKey = () => pathKey;
+
+    return { _getPathKey, setStorage, getStorage };
 }
