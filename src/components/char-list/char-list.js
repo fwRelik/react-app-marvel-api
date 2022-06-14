@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 
 import { useScroll } from '../../hooks/scroll.hook';
-
+import { useSessionStorage } from '../../hooks/sessionStorage.hook';
 import useMarvelService from '../../services/marvel-services';
 
 import ErrorMessage from '../error-message';
@@ -11,20 +11,26 @@ import Spinner from '../sipnner';
 import './char-list.scss';
 
 const CharList = ({ onCharSelected }) => {
+    const { loading, error, clearError, getAllCharacters } = useMarvelService();
+    const { scrollEnd, setScrollEnd } = useScroll();
+    const { setStorage, getStorage } = useSessionStorage();
+
     const [items, setItems] = useState([]);
     const [newItemsLoading, setNewItemsLoading] = useState(false);
     const [offset, setOffset] = useState(210);
     const [charEnded, setCharEnded] = useState(false);
 
-    const { loading, error, clearError, getAllCharacters } = useMarvelService();
-    const { scrollEnd, setScrollEnd } = useScroll();
-
     useEffect(() => {
-        onRequest(offset, true);
+        if (!getStorage('charInfo').length) {
+            onRequest(offset, true);
+        } else {
+            setItems(getStorage('charInfo'));
+            setOffset(+getStorage('charOffset') + 9)
+        }
     }, []);
 
     useEffect(() => {
-        if (scrollEnd) onRequest(offset);
+        if (scrollEnd && !charEnded) onRequest(offset);
     }, [scrollEnd]);
 
     const onRequest = (offset, initial) => {
@@ -39,10 +45,16 @@ const CharList = ({ onCharSelected }) => {
 
         clearError();
         setOffset(offset => offset + 9);
-        setItems(items => [...items, ...newItems]);
+        setStorage('charOffset', offset);
+
         setNewItemsLoading(false);
-        setScrollEnd(false)
         setCharEnded(ended);
+
+        setItems(items => [...items, ...newItems]);
+
+        setStorage('charInfo', [...items, ...newItems]);
+        setStorage('charOffset', offset);
+        setScrollEnd(false)
     }
 
     let itemRefs = useRef([]);
