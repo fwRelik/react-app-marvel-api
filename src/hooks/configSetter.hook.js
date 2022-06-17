@@ -10,8 +10,8 @@ export const useConfigSetter = () => {
         setStorage('scrollTop', Math.floor(document.documentElement.scrollTop));
     }
 
-    const getConfigPage = (items) => {
-        if (Array.isArray(items) && items.length) {
+    const getConfigPage = (...items) => {
+        if (items.length) {
             return items.map(item => getStorage(item));
         } else {
             let obj = {};

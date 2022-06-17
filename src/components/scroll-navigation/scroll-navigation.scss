@@ -1,14 +1,26 @@
-.scroll__navigation-wrapper {
+.scroll__navigation {
     position: fixed;
     bottom: 5%;
     right: 5%;
     z-index: 5;
-}
 
-.scroll__navigation-button {
-    width: 100px;
-    height: 60px;
-    background-color: red;
-    color: white;
-    cursor: pointer;
+    &-button {
+        width: 50px;
+        height: 50px;
+        background: #9e1212;
+        color: #fff;
+        cursor: pointer;
+        border: none;
+
+        &>svg {
+            width: 45%;
+            fill: #fff;
+        }
+    }
+
+    &.deg180 {
+        svg {
+            transform: rotate(180deg);
+        }
+    }
 }

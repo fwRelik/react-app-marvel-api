@@ -1,21 +1,37 @@
-import { useSessionStorage } from '../../hooks/sessionStorage.hook';
+import { useState, useEffect } from 'react';
+
+import { AnglesUp } from '../svg/'
 
 import './scroll-navigation.scss';
 
 const ScrollNavigation = () => {
-    const { getStorage } = useSessionStorage();
-    const onClickUpHandlaer = () => {
+    const [hide, setHide] = useState(true);
+
+    useEffect(() => {
+        window.addEventListener('scroll', buttonState);
+
+        return () => window.removeEventListener('scroll', buttonState);
+    }, []);
+
+    const buttonState = () => {
+        const doc = document.documentElement;
+        if (doc.scrollTop > 400) setHide(false);
+        else setHide(true);
+    }
+
+    const onClickHandler = () => {
         document.documentElement.scrollTop = 0;
     }
 
-    const onClickDownHandlaer = () => {
-        document.documentElement.scrollTop = getStorage('scrollTop');
-    }
+    if (hide) return;
 
     return (
-        <div className="scroll__navigation-wrapper">
-            <button onClick={onClickUpHandlaer} className='scroll__navigation-button'>Click to up</button>
-            <button onClick={onClickDownHandlaer} className='scroll__navigation-button'>Click to down</button>
+        <div className={`scroll__navigation`}>
+            <button
+                onClick={onClickHandler}
+                className='scroll__navigation-button'>
+                <AnglesUp style={'regular'} />
+            </button>
         </div>
     )
 }
