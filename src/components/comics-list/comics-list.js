@@ -8,7 +8,7 @@ import { useConfigSetter } from '../../hooks/configSetter.hook';
 import useMarvelService from '../../services/marvel-services';
 
 import ErrorMessage from '../error-message';
-import Spinner from '../sipnner';
+import Spinner from '../spinner';
 
 import './comics-list.scss';
 

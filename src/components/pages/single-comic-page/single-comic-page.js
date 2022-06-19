@@ -4,7 +4,7 @@ import { useParams, Link } from "react-router-dom";
 import useMarvelService from '../../../services/marvel-services';
 
 import ErrorMessage from '../../error-message';
-import Spinner from '../../sipnner';
+import Spinner from '../../spinner';
 
 import './single-comic-page.scss';
 
