@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
+
 import { useScroll } from '../../hooks/scroll.hook';
-import { useSessionStorage } from '../../hooks/sessionStorage.hook';
 import { useConfigSetter } from '../../hooks/configSetter.hook';
 import useMarvelService from '../../services/marvel-services';
 
 import ErrorMessage from '../error-message';
 import Spinner from '../spinner';
+
 
 import './char-list.scss';
 
@@ -72,7 +74,7 @@ const CharList = ({ onCharSelected }) => {
     const renderItems = (arr) => {
         if (Object.keys(arr).length === 0) return;
 
-        const listItem = arr.map((val, i) => {
+        const listItem = arr.map((val, i, array) => {
             const { id, thumbnail, name } = val;
             let imgNotAvaStyle = {},
                 letters = {}
@@ -81,37 +83,41 @@ const CharList = ({ onCharSelected }) => {
             if (name.length > 20) letters.fontSize = '16px';
 
             return (
-                <li
-                    key={i}
-                    ref={el => itemRefs.current[i] = el}
-                    tabIndex={0}
-                    className="char__item"
-                    onClick={() => {
-                        focusOnItem(i);
-                        onCharSelected(id);
-                    }}
-                    onKeyPress={e => {
-                        if (e.key === " " || e.key === "Enter") {
+                <CSSTransition key={i} timeout={500} classNames="char__item" >
+                    <li
+                        ref={el => itemRefs.current[i] = el}
+                        tabIndex={0}
+                        className="char__item"
+                        onClick={() => {
                             focusOnItem(i);
                             onCharSelected(id);
-                        }
-                    }}>
-                    <img
-                        src={thumbnail}
-                        alt={name}
-                        style={imgNotAvaStyle} />
-                    <div
-                        className="char__name"
-                        style={letters}>
-                        {name}
-                    </div>
-                </li>
+                        }}
+                        onKeyPress={e => {
+                            if (e.key === " " || e.key === "Enter") {
+                                focusOnItem(i);
+                                onCharSelected(id);
+                            }
+                        }}>
+                        <img
+                            src={thumbnail}
+                            alt={name}
+                            style={imgNotAvaStyle} />
+                        <div
+                            className="char__name"
+                            style={letters}>
+                            {name}
+                        </div>
+                    </li>
+                </CSSTransition >
             )
         });
 
         return (
-            <ul className="char__grid">
-                {listItem}
+            <ul
+                className="char__grid">
+                <TransitionGroup component={null}>
+                    {listItem}
+                </TransitionGroup>
             </ul>
         )
     }
