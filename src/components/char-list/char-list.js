@@ -20,7 +20,7 @@ const CharList = ({ onCharSelected }) => {
 
     const [items, setItems] = useState([]);
     const [newItemsLoading, setNewItemsLoading] = useState(false);
-    const [offset, setOffset] = useState(210);
+    const [offset, setOffset] = useState(Math.floor(Math.random() * 400));
     const [charEnded, setCharEnded] = useState(false);
 
     useEffect(() => {

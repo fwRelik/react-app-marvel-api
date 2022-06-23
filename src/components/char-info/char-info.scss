@@ -56,6 +56,28 @@
         &-list {
             position: relative;
             margin-top: 10px;
+            max-height: 240px;
+            overflow-Y: scroll;
+
+            /* Firefox */
+            & {
+                scrollbar-width: auto;
+                scrollbar-color: #9e1212 #ffffff;
+            }
+
+            /* Chrome, Edge, and Safari */
+            &::-webkit-scrollbar {
+                width: 5px;
+            }
+
+            &::-webkit-scrollbar-track {
+                background: #ffffff;
+            }
+
+            &::-webkit-scrollbar-thumb {
+                background-color: #9e1212;
+                border-radius: 10px;
+            }
         }
 
         &-item {

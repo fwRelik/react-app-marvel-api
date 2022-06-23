@@ -1,16 +1,17 @@
+import { useCallback } from "react";
 import { useSessionStorage } from "./sessionStorage.hook";
 
 export const useConfigSetter = () => {
     const { _getPathKey, setStorage, getStorage } = useSessionStorage();
     const pathKey = _getPathKey() + '_';
 
-    const setConfigPage = ({ items = [], offset = 0 }) => {
+    const setConfigPage = useCallback(({ items = [], offset = 0 }) => {
         setStorage('itemInfo', items);
         setStorage('itemOffset', offset);
         setStorage('scrollTop', Math.floor(document.documentElement.scrollTop));
-    }
+    }, []);
 
-    const getConfigPage = (...items) => {
+    const getConfigPage = useCallback((...items) => {
         if (items.length) {
             return items.map(item => getStorage(item));
         } else {
@@ -22,7 +23,7 @@ export const useConfigSetter = () => {
             }
             return obj;
         }
-    }
+    }, []);
 
     return { setConfigPage, getConfigPage };
 }
