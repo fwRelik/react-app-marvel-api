@@ -13,6 +13,7 @@ const MainPage = i('main-page');
 const ComicsPage = i('comics-page');
 const Page404 = i('404');
 const SingleComicPage = i('single-comic-page');
+const SingleCharacterPage = i('single-character-page');
 
 const App = () => {
     return (
@@ -25,6 +26,7 @@ const App = () => {
                             <Route path="/" element={<MainPage />} />
                             <Route path="comics" element={<ComicsPage />} />
                             <Route path="comics/:comicId" element={<SingleComicPage />} />
+                            <Route path="characters/:characterId" element={<SingleCharacterPage />} />
                             <Route path="*" element={<Page404 />} />
                         </Routes>
                         <ScrollNavigation />

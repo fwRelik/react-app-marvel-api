@@ -20,6 +20,10 @@
         grid-template-columns: 70% 30%;
         align-items: center;
 
+        &:last-child {
+            margin-top: 25px;
+        }
+
         &>input {
             width: 250px;
             height: 31px;
@@ -31,9 +35,7 @@
 
     // &__button_find {}
 
-    &__button_page {
-        margin-top: 25px;
-    }
+    // &__button_page {}
 
     &__error {
         margin-top: 25px;
@@ -42,7 +44,6 @@
     }
 
     &__finded {
-        margin-top: 25px;
         color: #03710E;
         font-weight: 700;
     }
