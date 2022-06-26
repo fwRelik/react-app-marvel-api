@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { main_page } from '../../../config/pages.config';
 
 import RandomChar from "../../random-char";
 import CharList from "../../char-list";
@@ -12,6 +13,7 @@ import './main-page.scss';
 
 const MainPage = () => {
     const [selectedChar, setSelectedChar] = useState(null);
+    const helmet = main_page();
 
     const onCharSelected = (id) => {
         setSelectedChar(id)
@@ -19,16 +21,19 @@ const MainPage = () => {
 
     return (
         <>
+            {helmet}
             <ErrorBoundary>
                 <RandomChar />
             </ErrorBoundary>
             <div className="char__content">
                 <CharList onCharSelected={onCharSelected} />
-                <div className="char__wrapper">
+                <div>
                     <ErrorBoundary>
                         <CharInfo charId={selectedChar} />
                     </ErrorBoundary>
-                    <Search />
+                    <ErrorBoundary>
+                        <Search />
+                    </ErrorBoundary>
                 </div>
             </div>
             <img className="bg-decoration" src={decoration} alt="vision" />

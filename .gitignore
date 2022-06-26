@@ -10,7 +10,7 @@
 /build
 
 # configs
-/src/config/*.config.[jt]s*
+/src/config/local.config.[jt]s*
 
 # misc
 .DS_Store

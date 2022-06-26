@@ -13,7 +13,7 @@ import Spinner from '../spinner';
 import './comics-list.scss';
 
 const ComicsList = () => {
-    const { loading, error, getAllComics } = useMarvelService();
+    const { loading, error, clearError, getAllComics } = useMarvelService();
     const { scrollEnd, setScrollEnd } = useScroll();
     const { setConfigPage, getConfigPage } = useConfigSetter();
 
@@ -46,6 +46,8 @@ const ComicsList = () => {
 
     const onItemsLoaded = (newItems) => {
         let ended = newItems.length < 8 ? true : false;
+
+        clearError();
 
         setComicsList(comicsList => [...comicsList, ...newItems]);
         setOffset(offset => offset + 8);

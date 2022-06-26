@@ -3,8 +3,9 @@ import { useParams } from "react-router-dom";
 
 import useMarvelService from '../services/marvel-services';
 
-export const useEssencePage = (dataType) => {
+export const useGettingPageMethod = (dataType) => {
     const [item, setItem] = useState(null);
+    const [dataKey, setDataKey] = useState(null);
     const { itemId } = useParams();
     const { loading, error, clearError, getCharacter, getComic } = useMarvelService();
 
@@ -15,8 +16,10 @@ export const useEssencePage = (dataType) => {
     const _method = (method) => {
         switch (method) {
             case 'character':
+                setDataKey('name');
                 return getCharacter
             case 'comic':
+                setDataKey('title');
                 return getComic
             default:
                 throw new Error('Method for getting data is not defined.');
@@ -32,6 +35,7 @@ export const useEssencePage = (dataType) => {
     return {
         itemId,
         item,
+        dataKey,
         loading,
         error,
         clearError,

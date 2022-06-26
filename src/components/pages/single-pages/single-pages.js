@@ -1,4 +1,5 @@
-import { useEssencePage } from '../../../hooks/essencePage.hook';
+import { useGettingPageMethod } from '../../../hooks/gettingPageMehtod';
+import { single_pages } from '../../../config/pages.config';
 
 import AppBanner from '../../app-banner';
 import ErrorMessage from '../../error-message';
@@ -7,9 +8,11 @@ import Spinner from '../../spinner';
 import './single-pages.scss'
 
 const SinglePages = ({ Component, dataType }) => {
-    const { item, loading, error } = useEssencePage(dataType);
-
-    console.log(Component)
+    const { item, dataKey, loading, error } = useGettingPageMethod(dataType);
+    const helmet = single_pages({
+        title: item?.[dataKey],
+        descContent: `${item?.[dataKey]} Page`
+    });
 
     const errorMessage = error ? <ErrorMessage /> : null;
     const spinner = loading ? <Spinner /> : null;
@@ -17,6 +20,7 @@ const SinglePages = ({ Component, dataType }) => {
 
     return (
         <>
+            {helmet}
             <AppBanner />
             <div className="single-item">
                 {errorMessage}

@@ -4,23 +4,24 @@ import { Formik, Form, Field, ErrorMessage as FormikErrorMessage } from 'formik'
 import * as Yup from 'yup';
 
 import useMarvelService from '../../services/marvel-services';
+import ErrorMessage from '../error-message';
 
 import './search.scss';
 
 const Search = () => {
     const [char, setChar] = useState(null);
-    const { loading, clearError, getCharacterByName } = useMarvelService();
+    const { loading, error, clearError, getCharacterByName } = useMarvelService();
 
     const updateChar = (charName) => {
         clearError();
-
 
         getCharacterByName(charName)
             .then(setChar)
             .catch(() => setChar([]));
     }
 
-    const results = !char ? null : [char][0]?.id ?
+    const errorMessage = error ? <ErrorMessage /> : null;
+    const results = !char ? null : char?.id ?
         <div className="search__find_character">
             <div className="search__finded">
                 There is! Visit {char.name} page?
@@ -66,6 +67,7 @@ const Search = () => {
                 </Form>
             </Formik>
             {results}
+            {errorMessage}
         </div>
     );
 };
