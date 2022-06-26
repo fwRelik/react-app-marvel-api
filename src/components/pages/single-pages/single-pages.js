@@ -11,7 +11,7 @@ const SinglePages = ({ Component, dataType }) => {
     const { item, dataKey, loading, error } = useGettingPageMethod(dataType);
     const helmet = single_pages({
         title: item?.[dataKey],
-        descContent: `${item?.[dataKey]} Page`
+        descContent: `"${item?.[dataKey]}" Page`
     });
 
     const errorMessage = error ? <ErrorMessage /> : null;

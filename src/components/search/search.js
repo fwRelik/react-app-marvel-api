@@ -66,6 +66,7 @@ const Search = () => {
                     <FormikErrorMessage component="div" className="search__error" name="charName" />
                 </Form>
             </Formik>
+
             {results}
             {errorMessage}
         </div>

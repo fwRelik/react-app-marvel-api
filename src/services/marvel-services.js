@@ -1,9 +1,7 @@
 import { useHttp } from '../hooks/http.hook';
 import { config } from '../config/local.config';
 
-if (!config) {
-    throw new Error('Perhaps the configuration file is missing or configured incorrectly, take a look at the hint "local.config.txt"')
-}
+if (!config) throw new Error('Perhaps the configuration file is missing or configured incorrectly, take a look at the hint "local.config.txt"');
 
 const { _apiBase, _apiKey, _baseOffset } = config;
 

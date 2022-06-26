@@ -1,5 +1,11 @@
 import { Helmet } from 'react-helmet';
 
+const recurring = (
+    <>
+        {/* ... */}
+    </>
+);
+
 export const main_page = () => (
     <Helmet>
         <meta name="description" content="React App Marvel Api" />

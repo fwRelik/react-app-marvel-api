@@ -18,9 +18,7 @@ const RandomChar = () => {
         updateChar();
         // const timerId = setInterval(() => updateChar(true), 5000);
 
-        // return () => {
-        //     clearInterval(timerId);
-        // }
+        // return () => clearInterval(timerId);
     }, []);
 
     const onCharLoaded = (char) => {
@@ -40,7 +38,7 @@ const RandomChar = () => {
         updateChar();
     }
 
-    const errorMessage = error ? <ErrorMessage />: null;
+    const errorMessage = error ? <ErrorMessage /> : null;
     const spinner = loading ? <Spinner /> : null;
     const content = !(loading || error) ? <View char={char} /> : null;
 

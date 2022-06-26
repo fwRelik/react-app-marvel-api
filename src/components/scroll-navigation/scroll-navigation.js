@@ -19,10 +19,7 @@ const ScrollNavigation = () => {
         else setHide(true);
     }
 
-    const onClickHandler = () => {
-        document.documentElement.scrollTop = 0;
-    }
-
+    const onClickHandler = () => document.documentElement.scrollTop = 0;
     if (hide) return;
 
     return (
