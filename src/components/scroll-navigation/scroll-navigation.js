@@ -11,6 +11,7 @@ const ScrollNavigation = () => {
         window.addEventListener('scroll', buttonState);
 
         return () => window.removeEventListener('scroll', buttonState);
+        // eslint-disable-next-line
     }, []);
 
     const buttonState = () => {
@@ -27,7 +28,7 @@ const ScrollNavigation = () => {
             <button
                 onClick={onClickHandler}
                 className='scroll__navigation-button'>
-                <AnglesUp style={'regular'} />
+                <AnglesUp type={'regular'} />
             </button>
         </div>
     )

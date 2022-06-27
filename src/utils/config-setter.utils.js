@@ -9,6 +9,7 @@ export const ConfigSetterUtils = () => {
         setStorage('itemInfo', items);
         setStorage('itemOffset', offset);
         setStorage('scrollTop', Math.floor(document.documentElement.scrollTop));
+        // eslint-disable-next-line
     }, []);
 
     const getConfigPage = useCallback((...items) => {
@@ -23,6 +24,7 @@ export const ConfigSetterUtils = () => {
             }
             return obj;
         }
+        // eslint-disable-next-line
     }, []);
 
     return { setConfigPage, getConfigPage };

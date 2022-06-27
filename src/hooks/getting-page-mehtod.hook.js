@@ -11,6 +11,7 @@ export const useGettingPageMethod = (dataType) => {
 
     useEffect(() => {
         updateItem();
+        // eslint-disable-next-line
     }, [itemId]);
 
     const _method = (method) => {
@@ -30,7 +31,8 @@ export const useGettingPageMethod = (dataType) => {
         _method(dataType)(itemId)
             .then(setItem)
             .then(() => setProcess('confirmed'))
-    });
+        // eslint-disable-next-line
+    }, []);
 
     return {
         itemId,

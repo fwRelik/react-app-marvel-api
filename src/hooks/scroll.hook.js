@@ -10,12 +10,14 @@ export const useScroll = () => {
         if (scrollHeight - scrollTop <= 0) {
             setScrollEnd(true);
         }
-    });
+        // eslint-disable-next-line
+    }, []);
 
     useEffect(() => {
         window.addEventListener('scroll', onScrollLoad);
 
         return () => window.removeEventListener('scroll', onScrollLoad);
+        // eslint-disable-next-line
     }, [scrollEnd]);
 
     return { scrollEnd, setScrollEnd };

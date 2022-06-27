@@ -30,10 +30,12 @@ const ComicsList = () => {
             setOffset(itemOffset + 8);
             setProcess('confirmed');
         }
+        // eslint-disable-next-line
     }, [])
 
     useEffect(() => {
         if (scrollEnd) onRequest(offset);
+        // eslint-disable-next-line
     }, [scrollEnd])
 
     const onRequest = (offset, initial) => {

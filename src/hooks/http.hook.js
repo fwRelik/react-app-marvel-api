@@ -20,6 +20,7 @@ export const useHttp = () => {
             setProcess('error');
             throw e;
         }
+        // eslint-disable-next-line
     }, []);
 
     return { request, process, setProcess };

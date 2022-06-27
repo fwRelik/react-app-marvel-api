@@ -30,10 +30,12 @@ const CharList = ({ onCharSelected }) => {
             setOffset(itemOffset + 9);
             setProcess('confirmed');
         }
+        // eslint-disable-next-line
     }, []);
 
     useEffect(() => {
         if (scrollEnd && !charEnded) onRequest(offset);
+        // eslint-disable-next-line
     }, [scrollEnd]);
 
     const onRequest = (offset, initial) => {

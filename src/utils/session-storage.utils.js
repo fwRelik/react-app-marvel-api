@@ -10,11 +10,13 @@ export const SessionStorageUtils = () => {
 
     const getStorage = useCallback((key) => {
         return JSON.parse(sessionStorage.getItem(`${pathKey}_${key}`)) || [];
-    });
+        // eslint-disable-next-line
+    }, []);
 
     const setStorage = useCallback((key, values) => {
         sessionStorage.setItem(`${pathKey}_${key}`, JSON.stringify(values));
-    });
+        // eslint-disable-next-line
+    }, []);
 
     const _getPathKey = () => pathKey;
 

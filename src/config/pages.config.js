@@ -1,10 +1,10 @@
 import { Helmet } from 'react-helmet';
 
-const recurring = (
-    <>
-        {/* ... */}
-    </>
-);
+// const recurring = (
+//     <>
+//         {/* ... */}
+//     </>
+// );
 
 export const main_page = () => (
     <Helmet>
