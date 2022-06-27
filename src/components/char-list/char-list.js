@@ -4,19 +4,16 @@ import PropTypes from 'prop-types';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 
 import { useScroll } from '../../hooks/scroll.hook';
-import { useConfigSetter } from '../../hooks/configSetter.hook';
+import { ConfigSetterUtils } from '../../utils/config-setter.utils';
 import useMarvelService from '../../services/marvel-services';
-
-import ErrorMessage from '../error-message';
-import Spinner from '../spinner';
-
+import { setContentLists } from '../../utils/content-setters.utils';
 
 import './char-list.scss';
 
 const CharList = ({ onCharSelected }) => {
-    const { loading, error, clearError, getAllCharacters } = useMarvelService();
+    const { process, setProcess, getAllCharacters } = useMarvelService();
     const { scrollEnd, setScrollEnd } = useScroll();
-    const { setConfigPage, getConfigPage } = useConfigSetter();
+    const { setConfigPage, getConfigPage } = ConfigSetterUtils();
 
     const [items, setItems] = useState([]);
     const [newItemsLoading, setNewItemsLoading] = useState(false);
@@ -31,6 +28,7 @@ const CharList = ({ onCharSelected }) => {
         } else {
             setItems(itemInfo);
             setOffset(itemOffset + 9);
+            setProcess('confirmed');
         }
     }, []);
 
@@ -43,12 +41,11 @@ const CharList = ({ onCharSelected }) => {
 
         getAllCharacters(offset)
             .then(onItemsLoaded)
+            .then(() => setProcess('confirmed'));
     }
 
     const onItemsLoaded = (newItems) => {
         let ended = newItems.length < 9 ? true : false;
-
-        clearError();
 
         setOffset(offset => offset + 9);
         setItems(items => [...items, ...newItems]);
@@ -74,7 +71,7 @@ const CharList = ({ onCharSelected }) => {
     const renderItems = (arr) => {
         if (Object.keys(arr).length === 0) return;
 
-        const listItem = arr.map((val, i, array) => {
+        const listItem = arr.map((val, i) => {
             const { id, thumbnail, name } = val;
             let imgNotAvaStyle = {},
                 letters = {}
@@ -83,7 +80,11 @@ const CharList = ({ onCharSelected }) => {
             if (name.length > 20) letters.fontSize = '16px';
 
             return (
-                <CSSTransition key={i} timeout={500} classNames="char__item" >
+                <CSSTransition
+                    key={i}
+                    timeout={500}
+                    classNames="char__item"
+                >
                     <li
                         ref={el => itemRefs.current[i] = el}
                         tabIndex={0}
@@ -122,17 +123,10 @@ const CharList = ({ onCharSelected }) => {
         )
     }
 
-    const chars = renderItems(items);
-
-    const errorMessage = error ? <ErrorMessage /> : null;
-    const spinner = loading && !newItemsLoading ? <Spinner /> : null;
-
     return (
         <div className="char__list">
 
-            {errorMessage}
-            {spinner}
-            {chars}
+            {setContentLists(process, renderItems(items), newItemsLoading)}
 
             <button
                 className="button button__main button__long"

@@ -7,7 +7,7 @@ export const useGettingPageMethod = (dataType) => {
     const [item, setItem] = useState(null);
     const [dataKey, setDataKey] = useState(null);
     const { itemId } = useParams();
-    const { loading, error, clearError, getCharacter, getComic } = useMarvelService();
+    const { process, setProcess, getCharacter, getComic } = useMarvelService();
 
     useEffect(() => {
         updateItem();
@@ -27,18 +27,17 @@ export const useGettingPageMethod = (dataType) => {
     }
 
     const updateItem = useCallback(() => {
-        clearError();
         _method(dataType)(itemId)
             .then(setItem)
+            .then(() => setProcess('confirmed'))
     });
 
     return {
         itemId,
         item,
         dataKey,
-        loading,
-        error,
-        clearError,
+        process,
+        setProcess,
         getComic,
         updateItem,
     }

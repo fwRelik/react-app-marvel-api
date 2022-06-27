@@ -6,7 +6,7 @@ if (!config) throw new Error('Perhaps the configuration file is missing or confi
 const { _apiBase, _apiKey, _baseOffset } = config;
 
 const useMarvelService = () => {
-    const { loading, error, request, clearError } = useHttp();
+    const { request, process, setProcess } = useHttp();
 
     const getAllCharacters = async (offset = _baseOffset) => {
         const res = await request(`${_apiBase}characters?limit=9&offset=${offset}&${_apiKey}`);
@@ -20,7 +20,7 @@ const useMarvelService = () => {
 
     const getCharacterByName = async (name) => {
         const res = await request(`${_apiBase}characters?name=${name}&${_apiKey}`);
-        return _transformCharacter(res.data.results[0]);
+        return res.data.results.length > 0 ? _transformCharacter(res.data.results[0]) : null;
     }
 
     const getAllComics = async (offset = 0) => {
@@ -58,9 +58,8 @@ const useMarvelService = () => {
     }
 
     return {
-        loading,
-        error,
-        clearError,
+        process,
+        setProcess,
         getAllCharacters,
         getCharacter,
         getCharacterByName,

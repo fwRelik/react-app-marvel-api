@@ -1,21 +1,19 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
+
 import { useScroll } from '../../hooks/scroll.hook';
-import { useSessionStorage } from '../../hooks/sessionStorage.hook';
-import { useConfigSetter } from '../../hooks/configSetter.hook';
-
+import { ConfigSetterUtils } from '../../utils/config-setter.utils';
 import useMarvelService from '../../services/marvel-services';
-
-import ErrorMessage from '../error-message';
-import Spinner from '../spinner';
+import { setContentLists } from '../../utils/content-setters.utils';
 
 import './comics-list.scss';
 
 const ComicsList = () => {
-    const { loading, error, clearError, getAllComics } = useMarvelService();
+    const { process, setProcess, getAllComics } = useMarvelService();
     const { scrollEnd, setScrollEnd } = useScroll();
-    const { setConfigPage, getConfigPage } = useConfigSetter();
+    const { setConfigPage, getConfigPage } = ConfigSetterUtils();
 
     const [comicsList, setComicsList] = useState([]);
     const [newItemsLoading, setNewItemsLoading] = useState(false);
@@ -30,6 +28,7 @@ const ComicsList = () => {
         } else {
             setComicsList(itemInfo);
             setOffset(itemOffset + 8);
+            setProcess('confirmed');
         }
     }, [])
 
@@ -42,12 +41,11 @@ const ComicsList = () => {
 
         getAllComics(offset)
             .then(onItemsLoaded)
+            .then(() => setProcess('confirmed'));
     }
 
     const onItemsLoaded = (newItems) => {
         let ended = newItems.length < 8 ? true : false;
-
-        clearError();
 
         setComicsList(comicsList => [...comicsList, ...newItems]);
         setOffset(offset => offset + 8);
@@ -69,40 +67,41 @@ const ComicsList = () => {
             if (thumbnail === `http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg`) imgNotAvaStyle.objectFit = 'fill';
 
             return (
-                <li
+                <CSSTransition
                     key={i}
-                    className="comics__item">
-                    <Link to={`${id}`}>
-                        <img
-                            src={thumbnail}
-                            alt={title}
-                            className="comics__item-img"
-                            style={imgNotAvaStyle} />
-                        <div className="comics__item-name">{title}</div>
-                        <div className="comics__item-price">{prices}</div>
-                    </Link>
-                </li>
+                    timeout={500}
+                    classNames="comics__item"
+                >
+                    <li
+                        key={i}
+                        className="comics__item">
+                        <Link to={`${id}`}>
+                            <img
+                                src={thumbnail}
+                                alt={title}
+                                className="comics__item-img"
+                                style={imgNotAvaStyle} />
+                            <div className="comics__item-name">{title}</div>
+                            <div className="comics__item-price">{prices}</div>
+                        </Link>
+                    </li>
+                </CSSTransition>
             )
         })
 
         return (
             <ul className="comics__grid">
-                {items}
+                <TransitionGroup component={null}>
+                    {items}
+                </TransitionGroup>
             </ul>
         );
     }
 
-    const items = renderItems();
-
-    const errorMessage = error ? <ErrorMessage /> : null;
-    const spinner = loading && !newItemsLoading ? <Spinner /> : null;
-
     return (
         <div className="comics__list">
 
-            {errorMessage}
-            {spinner}
-            {items}
+            {setContentLists(process, renderItems(), newItemsLoading)}
 
             <button
                 className="button button__main button__long"

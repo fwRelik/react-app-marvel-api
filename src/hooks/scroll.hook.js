@@ -14,11 +14,9 @@ export const useScroll = () => {
 
     useEffect(() => {
         window.addEventListener('scroll', onScrollLoad);
-        return () => {
-            window.removeEventListener('scroll', onScrollLoad);
-        }
-    }, [scrollEnd]);
 
+        return () => window.removeEventListener('scroll', onScrollLoad);
+    }, [scrollEnd]);
 
     return { scrollEnd, setScrollEnd };
 }

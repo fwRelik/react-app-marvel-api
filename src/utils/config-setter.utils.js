@@ -1,8 +1,8 @@
 import { useCallback } from "react";
-import { useSessionStorage } from "./sessionStorage.hook";
+import { SessionStorageUtils } from "./session-storage.utils";
 
-export const useConfigSetter = () => {
-    const { _getPathKey, setStorage, getStorage } = useSessionStorage();
+export const ConfigSetterUtils = () => {
+    const { _getPathKey, setStorage, getStorage } = SessionStorageUtils();
     const pathKey = _getPathKey() + '_';
 
     const setConfigPage = useCallback(({ items = [], offset = 0 }) => {

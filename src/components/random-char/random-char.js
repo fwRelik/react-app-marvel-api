@@ -1,36 +1,33 @@
 import React, { useState, useEffect } from 'react';
 
 import useMarvelService from '../../services/marvel-services';
-
-import Spinner from "../spinner";
-import ErrorMessage from '../error-message';
+import { setContentWithoutWaiting } from '../../utils/content-setters.utils';
 
 import './random-char.scss';
 import mjolnir from '../../assets/img/mjolnir.png';
 
 const RandomChar = () => {
-
     const [char, setChar] = useState({});
 
-    const { loading, error, getCharacter, clearError } = useMarvelService();
+    const { process, setProcess, getCharacter } = useMarvelService();
 
     useEffect(() => {
         updateChar();
-        // const timerId = setInterval(() => updateChar(true), 5000);
+        const timerId = setInterval(updateChar, 20000);
 
-        // return () => clearInterval(timerId);
+        return () => clearInterval(timerId);
     }, []);
 
     const onCharLoaded = (char) => {
         setChar(char);
     }
 
-    const updateChar = (interval = false) => {
-        // if (!interval) onLoading();
-        clearError();
+    const updateChar = () => {
         const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000);
+
         getCharacter(id)
             .then(onCharLoaded)
+            .then(() => setProcess('confirmed'));
     }
 
     const onTryClick = (e) => {
@@ -38,16 +35,10 @@ const RandomChar = () => {
         updateChar();
     }
 
-    const errorMessage = error ? <ErrorMessage /> : null;
-    const spinner = loading ? <Spinner /> : null;
-    const content = !(loading || error) ? <View char={char} /> : null;
-
     return (
         <div className="randomchar">
 
-            {errorMessage}
-            {spinner}
-            {content}
+            {setContentWithoutWaiting(process, View, char)}
 
             <div className="randomchar__static">
                 <p className="randomchar__title">
@@ -68,8 +59,7 @@ const RandomChar = () => {
     )
 }
 
-const View = ({ char }) => {
-    const { name, description, thumbnail, homepage, wiki } = char;
+const View = ({ data: { name, description, thumbnail, homepage, wiki } }) => {
 
     let imgNotAvaStyle = {};
     let _description = (description || 'No Description.');

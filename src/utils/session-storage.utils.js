@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 
-export const useSessionStorage = () => {
+export const SessionStorageUtils = () => {
     let pathKey;
     const { pathname } = useLocation();
 

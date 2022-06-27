@@ -4,24 +4,24 @@ import { Formik, Form, Field, ErrorMessage as FormikErrorMessage } from 'formik'
 import * as Yup from 'yup';
 
 import useMarvelService from '../../services/marvel-services';
-import ErrorMessage from '../error-message';
+import { setContentSearch } from '../../utils/content-setters.utils';
 
 import './search.scss';
 
 const Search = () => {
     const [char, setChar] = useState(null);
-    const { loading, error, clearError, getCharacterByName } = useMarvelService();
+    const { process, setProcess, getCharacterByName } = useMarvelService();
 
     const updateChar = (charName) => {
-        clearError();
 
         getCharacterByName(charName)
-            .then(setChar)
-            .catch(() => setChar([]));
+            .then(res => {
+                setChar(res);
+                res ? setProcess('confirmed') : setProcess('notfound');
+            })
     }
 
-    const errorMessage = error ? <ErrorMessage /> : null;
-    const results = !char ? null : char?.id ?
+    const finded = (char) => (
         <div className="search__find_character">
             <div className="search__finded">
                 There is! Visit {char.name} page?
@@ -29,10 +29,14 @@ const Search = () => {
             <Link to={`/characters/${char.id}`} type='submit' className="button button__secondary search__button_page">
                 <div className="inner">To Page</div>
             </Link>
-        </div> :
+        </div>
+    );
+
+    const notfound = () => (
         <div className="search__error">
             The character was not found. Check the name and try again.
-        </div>;
+        </div>
+    );
 
     return (
         <div className="search__form">
@@ -59,7 +63,7 @@ const Search = () => {
                     <button
                         type='submit'
                         className="button button__main search__button_find"
-                        disabled={loading}
+                        disabled={process === 'loading'}
                     >
                         <div className="inner">Find</div>
                     </button>
@@ -67,8 +71,12 @@ const Search = () => {
                 </Form>
             </Formik>
 
-            {results}
-            {errorMessage}
+            {
+                setContentSearch(process, char, {
+                    finded,
+                    notfound
+                })
+            }
         </div>
     );
 };
