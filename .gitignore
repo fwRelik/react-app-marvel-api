@@ -7,10 +7,10 @@
 /coverage
 
 # build
-/build
+# /build
 
 # configs
-/src/config/local.config.[jt]s*
+/src/config/_local.config.[jt]s*
 
 # misc
 .DS_Store
